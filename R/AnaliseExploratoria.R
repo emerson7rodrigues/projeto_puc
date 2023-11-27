@@ -63,7 +63,7 @@ boxplotArea <- plot_ly(anunciosFinal,
 # Exibir o gráfico
 boxplotArea
 
-#histPreco2
+#histPreco2 (Sem Outliers)
 histPreco2 <- plot_ly(anunciosFinal, x = ~Preco, type = 'histogram') %>%
   layout(title = 'Distribuição dos Preços dos Imóveis',
          xaxis = list(title = 'Preço'),

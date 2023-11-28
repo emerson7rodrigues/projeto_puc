@@ -37,8 +37,20 @@ anunciosFinal <-anunciosFinal[-which(anunciosFinal$Area %in%
 
 str(anunciosFinal)
 
+# Definindo os valores mínimos esperados
+min_area <- 30  # Area mínima 30m2
+min_preco <- 100000  # Preco mínimo 100k
+
+
+# Filtrando o dataframe com base nos valores mínimos esperados
+anunciosFiltrado <- subset(anunciosFinal, 
+                           Area >= min_area & 
+                             Preco >= min_preco)
+
+str(anunciosFiltrado)
+
 #boxplotPreco
-boxplotPreco2 <- plot_ly(anunciosFinal, 
+boxplotPreco2 <- plot_ly(anunciosFiltrado, 
                          type = 'box',
                          colors = c('#FF5653')) %>%
   add_boxplot(y=~Preco,
@@ -51,7 +63,7 @@ boxplotPreco2 <- plot_ly(anunciosFinal,
 boxplotPreco2
 
 #boxplotArea
-boxplotArea <- plot_ly(anunciosFinal, 
+boxplotArea <- plot_ly(anunciosFiltrado, 
                        type = 'box',
                        colors = c('#0109F9')) %>%
   add_boxplot(y=~Area,
@@ -64,7 +76,7 @@ boxplotArea <- plot_ly(anunciosFinal,
 boxplotArea
 
 #histPreco2 (Sem Outliers)
-histPreco2 <- plot_ly(anunciosFinal, x = ~Preco, type = 'histogram') %>%
+histPreco2 <- plot_ly(anunciosFiltrado, x = ~Preco, type = 'histogram') %>%
   layout(title = 'Distribuição dos Preços dos Imóveis',
          xaxis = list(title = 'Preço'),
          yaxis = list(title = 'Frequência'))
@@ -74,7 +86,7 @@ histPreco2
 
 #Gráfico de Dispersão (Scatter plot) Area x Preço
 
-scatter_plot <- plot_ly(anunciosFinal, 
+scatter_plot <- plot_ly(anunciosFiltrado, 
                         x= ~Area, 
                         y= ~Preco,
                         type = 'scatter',
@@ -88,38 +100,17 @@ scatter_plot <- plot_ly(anunciosFinal,
 scatter_plot
 
 #Tratar valores ausentes (remover todos os NA do dataset)
-anunciosFinal <- na.omit(anunciosFinal)
+anunciosFiltrado <- na.omit(anunciosFiltrado)
 
 # Verificando registros nulos nas colunas do dataframe
 nulos <- colSums(is.na(anunciosFinal))
 nulos
 
-str(anunciosFinal)
-
-
-#Minimo e Maximo das variáveis
-min_area <- min(anunciosFinal$Area)
-max_area <- max(anunciosFinal$Area)
-
-min_preco <- min(anunciosFinal$Preco)
-max_preco <- max(anunciosFinal$Preco)
-
-min_quartos <- min(anunciosFinal$Quartos)
-max_quartos <- max(anunciosFinal$Quartos)
-
-min_banheiros <- min(anunciosFinal$Banheiros)
-max_banheiros <- max(anunciosFinal$Banheiros)
-
-# Imprimindo os resultados
-cat("Área - Mínimo:", min_area, " Máximo:", max_area, "\n")
-cat("Preço - Mínimo:", min_preco, " Máximo:", max_preco, "\n")
-cat("Quartos - Mínimo:", min_quartos, " Máximo:", max_quartos, "\n")
-cat("Banheiros - Mínimo:", min_banheiros, " Máximo:", max_banheiros, "\n")
-
+str(anunciosFiltrado)
 
 #Gráfico de Dispersão (Scatter plot) Preço x Quartos
 
-scatter_plot2 <- plot_ly(anunciosFinal, 
+scatter_plot2 <- plot_ly(anunciosFiltrado, 
                          x= ~Quartos, 
                          y= ~Preco,
                          type = 'scatter',
@@ -135,7 +126,7 @@ scatter_plot2
 
 #Gráfico de Dispersão (Scatter plot) Preço x Banheiros
 
-scatter_plot3 <- plot_ly(anunciosFinal, 
+scatter_plot3 <- plot_ly(anunciosFiltrado, 
                          x= ~Banheiros, 
                          y= ~Preco,
                          type = 'scatter',
@@ -149,18 +140,18 @@ scatter_plot3 <- plot_ly(anunciosFinal,
 scatter_plot3
 
 #Remover dados faltantes (Anuncios sem preco)
-anunciosFinal <- anunciosFinal[!is.na(anunciosFinal$Preco),]
+anunciosFiltrado <- anunciosFiltrado[!is.na(anunciosFiltrado$Preco),]
 
 #Teste de correlação Preço x Quartos
-precoXquartos <- cor(x=anunciosFinal$Preco, y=anunciosFinal$Quartos)
+precoXquartos <- cor(x=anunciosFiltrado$Preco, y=anunciosFiltrado$Quartos)
 paste0("O coeficiente de correlação Preço x Quartos é: ", precoXquartos)
 
 #Teste de correlação Preço x Banheiros
-precoXbanheiros <- cor(x=anunciosFinal$Preco, y=anunciosFinal$Banheiros)
+precoXbanheiros <- cor(x=anunciosFiltrado$Preco, y=anunciosFiltrado$Banheiros)
 paste0("O coeficiente de correlação Preço x Banheiros é: ", precoXbanheiros)
 
 #Tabela Resumo da Análise Exploratória dos Dados
-resumoAED <- anunciosFinal %>%
+resumoAED <- anunciosFiltrado %>%
   summarise(Quantidade = n(),
             PrecoMedio = round(mean(Preco, na.rm = TRUE),2),
             Desvio = round(sd(Preco, na.rm = TRUE), 2),
@@ -172,7 +163,7 @@ resumoAED <- anunciosFinal %>%
 resumoAED
 
 #Análise localização
-resumoAELoc <- anunciosFinal %>%
+resumoAELoc <- anunciosFiltrado %>%
   group_by(Quadra) %>%
   summarise(Quantidade = n(),
             PrecoMedio = mean(Preco)) %>%

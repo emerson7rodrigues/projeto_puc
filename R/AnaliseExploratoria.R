@@ -44,7 +44,7 @@ boxplotPreco2 <- plot_ly(anunciosFinal,
   add_boxplot(y=~Preco,
               name = 'Preço',
               color='#FF5653') %>%
-  layout(title = 'Distribuição dos Preços dos Imóveis',
+  layout(title = 'Distribuição da variável Preco',
          yaxis = list(title = 'Valor'))
 
 # Exibir o gráfico
@@ -57,7 +57,7 @@ boxplotArea <- plot_ly(anunciosFinal,
   add_boxplot(y=~Area,
               name = 'Area',
               color='#0109F9') %>%
-  layout(title = 'Distribuição dos Preços dos Imóveis',
+  layout(title = 'Distribuição da variável Area',
          yaxis = list(title = 'Valor'))
 
 # Exibir o gráfico
@@ -90,7 +90,32 @@ scatter_plot
 #Tratar valores ausentes (remover todos os NA do dataset)
 anunciosFinal <- na.omit(anunciosFinal)
 
+# Verificando registros nulos nas colunas do dataframe
+nulos <- colSums(is.na(anunciosFinal))
+nulos
+
 str(anunciosFinal)
+
+
+#Minimo e Maximo das variáveis
+min_area <- min(anunciosFinal$Area)
+max_area <- max(anunciosFinal$Area)
+
+min_preco <- min(anunciosFinal$Preco)
+max_preco <- max(anunciosFinal$Preco)
+
+min_quartos <- min(anunciosFinal$Quartos)
+max_quartos <- max(anunciosFinal$Quartos)
+
+min_banheiros <- min(anunciosFinal$Banheiros)
+max_banheiros <- max(anunciosFinal$Banheiros)
+
+# Imprimindo os resultados
+cat("Área - Mínimo:", min_area, " Máximo:", max_area, "\n")
+cat("Preço - Mínimo:", min_preco, " Máximo:", max_preco, "\n")
+cat("Quartos - Mínimo:", min_quartos, " Máximo:", max_quartos, "\n")
+cat("Banheiros - Mínimo:", min_banheiros, " Máximo:", max_banheiros, "\n")
+
 
 #Gráfico de Dispersão (Scatter plot) Preço x Quartos
 

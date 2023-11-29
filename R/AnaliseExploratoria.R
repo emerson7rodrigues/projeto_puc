@@ -14,6 +14,7 @@ str(anunciosIntegrado)
 
 #Carregando as bibliotecas
 library(plotly)
+library(dplyr)
 
 #Distriuição dos preço dos imóveis (ggplot_ly)
 
@@ -170,10 +171,28 @@ resumoAELoc <- anunciosFiltrado %>%
             PrecoMedio = mean(Preco)) %>%
   arrange(PrecoMedio)
 
-#Grafico de barras do preço medio por Quadra  
+install.packages("ggplot2")
+library(ggplot2)
+
+#Odenar o dataframe em ordem decrescente por PrecoMedio
+resumoAELoc$PrecoMedio <- as.numeric(resumoAELoc$PrecoMedio)
+resumoAELoc <- resumoAELoc %>% arrange(Quadra)
+
+#Grafico de barras do preço medio por Quadra
 graficoBarra <- plot_ly(data = resumoAELoc,
                         type = 'bar', x=~Quadra, y=~PrecoMedio)
 
 graficoBarra
 
+#Gráfico de barras do preço medio quadra decrescente PrecoMedio
+graficoBarra2 <-ggplot(resumoAELoc, aes(x = reorder(Quadra,-PrecoMedio),
+                y = PrecoMedio)) +
+                  geom_bar(stat = "identity",fill = "blue") +
+                  labs(title = "Barra ordenado desc",
+                       x = "Quadra", 
+                       y = "Valor") +
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+scale_y_continuous(labels = scales::comma_format())
+
+graficoBarra2
 #Novas análises

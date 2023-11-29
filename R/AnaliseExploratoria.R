@@ -175,3 +175,5 @@ graficoBarra <- plot_ly(data = resumoAELoc,
                         type = 'bar', x=~Quadra, y=~PrecoMedio)
 
 graficoBarra
+
+#Novas análises

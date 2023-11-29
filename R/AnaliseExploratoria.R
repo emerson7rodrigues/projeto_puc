@@ -143,12 +143,13 @@ scatter_plot3
 anunciosFiltrado <- anunciosFiltrado[!is.na(anunciosFiltrado$Preco),]
 
 #Teste de correlação Preço x Quartos
-precoXquartos <- cor(x=anunciosFiltrado$Preco, y=anunciosFiltrado$Quartos)
-paste0("O coeficiente de correlação Preço x Quartos é: ", precoXquartos)
+corPrecoQuarto <- cor.test(anunciosFiltrado$Preco, anunciosFiltrado$Quartos, method = "pearson")
+paste0("O coeficiente de correlação Preco x Quartos é: ",corPrecoQuarto)
+
 
 #Teste de correlação Preço x Banheiros
-precoXbanheiros <- cor(x=anunciosFiltrado$Preco, y=anunciosFiltrado$Banheiros)
-paste0("O coeficiente de correlação Preço x Banheiros é: ", precoXbanheiros)
+corPrecoBanheiros <- cor.test(anunciosFiltrado$Preco, anunciosFiltrado$Banheiros, method = "pearson")
+paste0("O coeficiente de correlação Preco x Banheiros é: ",corPrecoBanheiros)
 
 #Tabela Resumo da Análise Exploratória dos Dados
 resumoAED <- anunciosFiltrado %>%

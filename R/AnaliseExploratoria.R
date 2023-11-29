@@ -171,6 +171,10 @@ resumoAELoc <- anunciosFiltrado %>%
             PrecoMedio = mean(Preco)) %>%
   arrange(PrecoMedio)
 
+resumoAELoc
+
+resumoAELoc$Quantidade <- resumoAELoc %>% arrange(Quantidade)
+
 install.packages("ggplot2")
 library(ggplot2)
 
@@ -188,11 +192,21 @@ graficoBarra
 graficoBarra2 <-ggplot(resumoAELoc, aes(x = reorder(Quadra,-PrecoMedio),
                 y = PrecoMedio)) +
                   geom_bar(stat = "identity",fill = "blue") +
-                  labs(title = "Barra ordenado desc",
+                  labs(title = "Preço Médio por Quadra Decrescente",
                        x = "Quadra", 
-                       y = "Valor") +
+                       y = "PrecoMedio") +
 theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
 scale_y_continuous(labels = scales::comma_format())
 
 graficoBarra2
+
+str(resumoAELoc)
+
+#Quantidade de registros por Quadra
+registros_Quadras <- resumoAELoc %>%
+  group_by(Quadra) %>%
+  summarise(Quantidade = n()) %>%
+  arrange(desc(Quantidade))
+  
+registros_Quadras
 #Novas análises

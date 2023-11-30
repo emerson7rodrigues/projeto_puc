@@ -1,3 +1,10 @@
+#Carregando as bibliotecas
+library(plotly)
+library(dplyr)
+library(ggplot2)
+library(cowplot)
+
+
 #INTEGRAÇAO DOS DATASETS
 
     #Importando os datasets criados
@@ -12,12 +19,6 @@
 
 #ANÁLISE EXPLORATORIA DOS DADOS
 
-      #Carregando as bibliotecas
-      library(plotly)
-      library(dplyr)
-      library(ggplot2)
-      library(cowplot)
-    
     #Distriuição dos preço dos imóveis (ggplot_ly)
     
     #histPreco
@@ -217,9 +218,6 @@ resumoAELoc
 
 resumoAELoc$Quantidade <- resumoAELoc %>% arrange(Quantidade)
 
-install.packages("ggplot2")
-library(ggplot2)
-
 #Odenar o dataframe em ordem decrescente por PrecoMedio
 resumoAELoc$PrecoMedio <- as.numeric(resumoAELoc$PrecoMedio)
 resumoAELoc <- resumoAELoc %>% arrange(Quadra)
@@ -241,14 +239,3 @@ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
 scale_y_continuous(labels = scales::comma_format())
 
 graficoBarra2
-
-str(resumoAELoc)
-
-#Quantidade de registros por Quadra
-registros_Quadras <- resumoAELoc %>%
-  group_by(Quadra) %>%
-  summarise(Quantidade = n()) %>%
-  arrange(desc(Quantidade))
-  
-registros_Quadras
-#Novas análises

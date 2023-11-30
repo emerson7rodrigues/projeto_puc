@@ -2,11 +2,13 @@
 install.packages("caret")
 install.packages("tidyverse")
 install.packages("randomForest")
+install.packages("class")
 
 #Carregando bibliotecas
 library(caret)
 library(tidyverse)
 library(randomForest)
+library(class)
 
 #INTEGRACAO
 
@@ -24,8 +26,8 @@ library(randomForest)
 
   #Tratamento de outliers
   #PrecoOut
-  anunciosFinalPred <- anunciosIntegrado[-which(anunciosIntegrado$Preco %in% 
-                                              boxplot(anunciosIntegrado$Preco, plot=F)$out),]
+  anunciosFinalPred <- anunciosIntegradoPred[-which(anunciosIntegradoPred$Preco %in% 
+                                              boxplot(anunciosIntegradoPred$Preco, plot=F)$out),]
   #AreaOut
   anunciosFinalPred <-anunciosFinalPred[-which(anunciosFinalPred$Area %in% 
                                          boxplot(anunciosFinalPred$Area, plot=F)$out),]
@@ -88,18 +90,73 @@ library(randomForest)
   dados_Treino <- anunciosFiltradoPred[indices_Treino, ]
   dados_Teste <- anunciosFiltradoPred[-indices_Treino, ]
   
-  #MODELO 1: REGRESSAO LINEAR MULTIPLA
-  modelo_lm <- lm(Preco ~ ., data = dados_Treino)
+  # MODELO 1: ARVORES DE DESCISAO
   
-  # Resumo do modelo
-  summary(modelo_lm)
+    # Ajuste do modelo Random Forest
+    modelo_rf <- randomForest(Preco ~ ., data = dados_Treino, ntree = 500)
+    
+    # Previsões no conjunto de teste
+    previsoes_rf <- predict(modelo_rf, newdata = dados_Teste)
+    
+    # Desvio Padrão dos Resíduos
+    dpr_rf <- sd(previsoes_rf - dados_Teste$Preco)
+    cat("Desvio Padrao dos Resídudos: ", dpr_rf, "\n")
+    
+    # Erro absoluto médio (MAE)
+    mae_rf <- mean(abs(previsoes_rf - dados_Teste$Preco))
+    cat("Erro Absoluto Médio (MAE):", mae_rf, "\n")
+    
+    # Erro percentual medio (MAPE)
+    mape_rf <- mean(abs((previsoes_rf - dados_Teste$Preco) / dados_Teste$Preco)) * 100
+    cat("Erro Percentual Médio (MAPE):", mape_rf, "%\n")
+    
+    # Desempenho do modelo
+    rmse_rf <- sqrt(mean((previsoes_rf - dados_Teste$Preco)^2))
+    cat("RMSE (Árvores de Decisão):", rmse_rf, "\n")
   
-  # Converta 'Quadra' para fator usando os níveis do conjunto de treino
-  dados_Teste$Quadra <- factor(dados_Teste$Quadra, levels = levels(dados_Treino$Quadra))
+  # MODELO 2: k-Nearest Neighbors (KNN)
   
-  # Faça previsões no conjunto de teste
-  previsoes_lm <- predict(modelo_lm, newdata = dados_Teste)
+    # Número de vizinhos (k)
+    k <- 5
+    
+    # Colunas preditoras
+    colum_Pred <- c("Quadra", "Area", "Quartos", "Banheiros")
+    modelo_knn <- knnreg(train = dados_Treino[, colum_Pred],
+                         test = dados_Teste[, colum_Pred],
+                         y = dados_Treino$Preco, k = k)
+    # Resumo do modelo
+    summary(modelo_knn)
+
+    
+    # Desempenho do modelo
+    rmse_knn <- sqrt(mean((modelo_knn - dados_Teste$Preco)^2))
+    cat("RMSE (k-Nearest Neighbors):", rmse_knn, "\n")
   
-  # Avalie o desempenho do modelo
-  rmse_lm <- sqrt(mean((previsoes_lm - dados_Teste$Preco)^2))
-  cat("RMSE (Regressão Linear Múltipla):", rmse_lm, "\n")
+  
+  # MODELO 3: REGRESSAO LINEAR MULTIPLA
+    modelo_lm <- lm(Preco ~ ., data = dados_Treino)
+    
+    # Resumo do modelo
+    summary(modelo_lm)
+    
+    # Convertendo 'Quadra' para fator usando os níveis do conjunto de treino
+    dados_Teste$Quadra <- factor(dados_Teste$Quadra, levels = levels(dados_Treino$Quadra))
+    
+    # Previsões no conjunto de teste
+    previsoes_lm <- predict(modelo_lm, newdata = dados_Teste)
+    
+    # Desvio Padrão dos Resíduos
+    dpr_lm <- sd(previsoes_lm - dados_Teste$Preco)
+    cat("Desvio Padrao dos Resídudos: ", dpr_lm, "\n")
+    
+    # Erro absoluto médio (MAE)
+    mae_lm <- mean(abs(previsoes_lm - dados_Teste$Preco))
+    cat("Erro Absoluto Médio (MAE):", mae_lm, "\n")
+    
+    # Erro percentual medio (MAPE)
+    mape_lm <- mean(abs((previsoes_lm - dados_Teste$Preco) / dados_Teste$Preco)) * 100
+    cat("Erro Percentual Médio (MAPE):", mape_lm, "%\n")
+    
+    # Desempenho do modelo
+    rmse_lm <- sqrt(mean((previsoes_lm - dados_Teste$Preco)^2))
+    cat("RMSE (Regressão Linear Múltipla):", rmse_lm, "\n")

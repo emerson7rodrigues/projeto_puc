@@ -1,54 +1,96 @@
 #INTEGRAÇAO DOS DATASETS
 
-#Importando os datasets criados
-anunciosDFImoveis <- read.csv("dados/DFImoveisTratado.csv")
-anunciosWImoveis <- read.csv("dados/WImoveisTratado.csv")
-
-#Concatenando os datasets
-anunciosIntegrado <- rbind(anunciosDFImoveis, anunciosWImoveis)
-
-#Estrutura do novo datasheet
-str(anunciosIntegrado)
+    #Importando os datasets criados
+    anunciosDFImoveis <- read.csv("dados/DFImoveisTratado.csv")
+    anunciosWImoveis <- read.csv("dados/WImoveisTratado.csv")
+    
+    #Concatenando os datasets
+    anunciosIntegrado <- rbind(anunciosDFImoveis, anunciosWImoveis)
+    
+    #Estrutura do novo datasheet
+    str(anunciosIntegrado)
 
 #ANÁLISE EXPLORATORIA DOS DADOS
 
-#Carregando as bibliotecas
-library(plotly)
-library(dplyr)
+      #Carregando as bibliotecas
+      library(plotly)
+      library(dplyr)
+      library(ggplot2)
+      library(cowplot)
+    
+    #Distriuição dos preço dos imóveis (ggplot_ly)
+    
+    #histPreco
+    histPreco <- plot_ly(anunciosIntegrado, x = ~Preco, type = 'histogram') %>%
+      layout(title = 'Distribuição dos Preços dos Imóveis',
+             xaxis = list(title = 'Preço'),
+             yaxis = list(title = 'Frequência'))
+    
+    # Exibir o gráfico
+    histPreco
+    
+#TRATAMENTO DE OUTLIERS    
+    
+    #PrecoOut
+    anunciosFinal <- anunciosIntegrado[-which(anunciosIntegrado$Preco %in% 
+                                                boxplot(anunciosIntegrado$Preco, plot=F)$out),]
+    #AreaOut
+    anunciosFinal <-anunciosFinal[-which(anunciosFinal$Area %in% 
+                                           boxplot(anunciosFinal$Area, plot=F)$out),]
+    
+    str(anunciosFinal)
+    
+    # Definindo os valores mínimos e máximos esperados
+    min_area <- 30  # Area mínima 30m2
+    min_preco <- 100000  # Preco mínimo 100k
+    max_ban <- 10 
+    
+    
+#DATA FRAME FILTRADO
+    
+    # Filtrando o dataframe com base nos valores mínimos esperados
+    anunciosFiltrado <- subset(anunciosFinal, 
+                               Area >= min_area & 
+                                 Preco >= min_preco &
+                                 Banheiros <= max_ban)
+    
+    str(anunciosFiltrado)
+    
+    
+#NOVOS GRAFICOS
+    
+      #MultBoxPlot das variáveis (Area, Preco, Quartos e Banheiros)
+      
+      boxplot_preco <- ggplot(anunciosFiltrado, aes(x = "", y = Preco)) +
+        geom_boxplot() +
+        ggtitle("Boxplot - Preco")
+      
+      boxplot_area <- ggplot(anunciosFiltrado, aes(x = "", y = Area)) +
+        geom_boxplot() +
+        ggtitle("Boxplot - Area")
+      
+      boxplot_quartos <- ggplot(anunciosFiltrado, aes(x = "", y = Quartos)) +
+        geom_boxplot() +
+        ggtitle("Boxplot - Quartos")
+      
+      boxplot_banheiros <- ggplot(anunciosFiltrado, aes(x = "", y = Banheiros)) +
+        geom_boxplot() +
+        ggtitle("Boxplot - Banheiros")
+      
+      multi_boxplot <- cowplot::plot_grid(
+        boxplot_preco, boxplot_area,
+        boxplot_quartos, boxplot_banheiros,
+        nrow = 2, ncol = 2
+      )
+      
+      multi_boxplot
 
-#Distriuição dos preço dos imóveis (ggplot_ly)
-
-#histPreco
-histPreco <- plot_ly(anunciosIntegrado, x = ~Preco, type = 'histogram') %>%
-  layout(title = 'Distribuição dos Preços dos Imóveis',
-         xaxis = list(title = 'Preço'),
-         yaxis = list(title = 'Frequência'))
-
-# Exibir o gráfico
-histPreco
-
-#Tratamento de outliers
-
-#PrecoOut
-anunciosFinal <- anunciosIntegrado[-which(anunciosIntegrado$Preco %in% 
-                                            boxplot(anunciosIntegrado$Preco, plot=F)$out),]
-#AreaOut
-anunciosFinal <-anunciosFinal[-which(anunciosFinal$Area %in% 
-                                       boxplot(anunciosFinal$Area, plot=F)$out),]
-
-str(anunciosFinal)
-
-# Definindo os valores mínimos esperados
-min_area <- 30  # Area mínima 30m2
-min_preco <- 100000  # Preco mínimo 100k
+#HEATMAP
 
 
-# Filtrando o dataframe com base nos valores mínimos esperados
-anunciosFiltrado <- subset(anunciosFinal, 
-                           Area >= min_area & 
-                             Preco >= min_preco)
 
-str(anunciosFiltrado)
+
+#
 
 #boxplotPreco
 boxplotPreco2 <- plot_ly(anunciosFiltrado, 

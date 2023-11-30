@@ -122,3 +122,4 @@ tail(anuncios_w, 10)
 
 # Salvando o dataframe em um arquivo CSV
 write.csv(anuncios_w, "dados/WImoveisTratado.csv", row.names = FALSE)
+

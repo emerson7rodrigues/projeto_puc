@@ -114,6 +114,7 @@ anuncios_df <- subset(anuncios_df, Quadra != "<NA>")
 
 # Exibindo a estrutura do dataframe após tratamentos
 str(anuncios_df)
+head(anuncios_df)
 
 # Verificando registros nulos nas colunas do dataframe
 nulos <- colSums(is.na(anuncios_df))
